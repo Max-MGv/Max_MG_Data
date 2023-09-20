@@ -1,0 +1,79 @@
+# Load libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+
+# Read in the data
+csv = pd.read_csv("linear_regression/csvv.txt")
+
+
+# Print the first five rows
+print(csv.head())
+print(csv.describe())
+
+# Create a scatter plot of score vs completed
+plt.scatter(csv.score, csv.completed)
+plt.xlabel('scores')
+plt.ylabel('Lesson completed')
+plt.show()
+plt.clf()
+
+# Fit a linear regression to predict score based on prior lessons completed
+score_model = sm.OLS.from_formula('score ~ completed', data=csv).fit()
+intercept = score_model.params[0]
+slope = score_model.params[1]
+print(score_model.params)
+print('Student with no prior lessons is expected to get {} score, \nwith every lesson taken, students are expected to get {} points more'.format(intercept.round(1), slope.round(1)))
+
+# Plot the scatter plot with the line on top
+plt.scatter(csv.score, csv.completed)
+plt.plot( score_model.predict(csv), csv.completed )
+plt.xlabel('scores')
+plt.ylabel('Lesson completed')
+plt.show()
+plt.clf()
+
+# Predict score for learner who has completed 20 prior lessons
+lessons_20 = {'completed' : 20}
+x = score_model.predict(lessons_20)
+print(x)
+
+# Calculate fitted values
+fitted_values = score_model.predict(csv)
+# Calculate residuals
+residuals = csv.score - fitted_values
+print(residuals)
+
+# Check normality assumption
+plt.hist(residuals)
+plt.title('residuals, normality check')
+plt.show()
+plt.clf()
+# Check homoscedasticity assumption
+plt.scatter(fitted_values, residuals)
+plt.title("homoscedasticity check")
+plt.axhline()
+plt.show()
+plt.close()
+
+# Create a boxplot of score vs lesson
+sns.boxplot(x= csv.lesson, y=csv.score)
+plt.title('lessons vs scores')
+plt.xlabel('lessons')
+plt.ylabel('scores')
+plt.show()
+plt.clf()
+
+# linear regression to predict score based on which lesson they took
+score_lesson_model = sm.OLS.from_formula('score ~ lesson', data = csv).fit()
+print(score_lesson_model.params)
+
+# Calculating and printing the group means and mean difference (for comparison)
+print(csv.groupby('lesson').score.mean()['Lesson A'] - csv.groupby('lesson').score.mean()['Lesson B'])
+
+# `sns.lmplot()` to plot `score` vs. `completed` colored by `lesson`
+sns.lmplot(x= 'completed', y='score', hue ='lesson', data = csv)
+plt.show()
+plt.clf
