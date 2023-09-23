@@ -1,6 +1,6 @@
 
 
-# Linear Regression Analysis
+# Linear Regression Analysis in Python
 
 ## Overview
 This Python script performs linear regression analysis using the provided dataset. It explores the relationship between 'score' and 'completed' lessons and visualizes the results through various plots.
